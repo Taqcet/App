@@ -27,6 +27,7 @@ import {Record} from 'immutable'
  *
  */
 var InitialState = Record({
+  processingInfo: true,
   currentUser: null,
   showState: false,
   currentState: null,

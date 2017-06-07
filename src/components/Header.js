@@ -34,6 +34,7 @@ import
   TouchableHighlight,
   View
 } from 'react-native'
+import colors from '../config/Colors';
 
 /**
  * Project component that will respond to onPress
@@ -55,8 +56,12 @@ var styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   mark: {
-    height: 100,
-    width: 100
+    height: 94,
+    width: 300
+  },
+  text: {
+    textAlign: 'center',
+    color: colors.white,
   }
 
 })
@@ -64,9 +69,9 @@ var styles = StyleSheet.create({
 /**
  * ### Translations
  */
-var I18n = require('react-native-i18n')
-import Translations from '../lib/Translations'
-I18n.translations = Translations
+var I18n = require('react-native-i18n');
+import Translations from '../lib/Translations';
+I18n.translations = Translations;
 
 var Header = React.createClass({
   /**
@@ -133,7 +138,7 @@ var Header = React.createClass({
    *
    */
   render () {
-    let displayText
+    let displayText;
     if (this.props.showState) {
       displayText = JSON.stringify(this.props.currentState)
     }
@@ -143,15 +148,25 @@ var Header = React.createClass({
         <View style={styles.header}>
 
           <TouchableHighlight onPress={this._onPressMark}>
-
             <Image style={styles.mark}
-              source={require('../images/Snowflake.png')}
+              source={require('../images/taqcet_white.png')}
             />
           </TouchableHighlight>
-          {this.props.isFetching
-           ? <ActivityIndicator animating size='large' />
-           : null
-          }
+          <View style={{paddingTop:40}}>
+            {this.props.isProcessing ?
+              <ActivityIndicator
+                color={colors.white}
+                animating size='large' />
+             :
+              <View>
+                <Text style={[styles.text,
+                {fontSize:32, color: colors.brightBlue}]}>
+                  Thank You!
+                </Text>
+                <Text style={styles.text}> We have got some data to train our models </Text>
+                <Text style={styles.text}> Now you can close the app</Text>
+              </View>}
+          </View>
 
         </View>
         {this.props.showState

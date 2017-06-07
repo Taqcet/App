@@ -15,9 +15,23 @@
  */
 const {
   SET_PLATFORM,
-  SET_VERSION
+  SET_VERSION,
+  SET_DEVICE_INFO
 } = require('../../lib/constants').default
 
+
+
+
+/**
+ * ## Set the platformState
+ *
+ */
+export function setDeviceInfo (info) {
+  return {
+    type: SET_DEVICE_INFO,
+    ...info
+  }
+}
 /**
  * ## Set the platformState
  *

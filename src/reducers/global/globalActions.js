@@ -14,7 +14,8 @@ const {
   SET_SESSION_TOKEN,
   SET_STORE,
   SET_STATE,
-  GET_STATE
+  GET_STATE,
+  SET_PROCESSING_INFO
 } = require('../../lib/constants').default
 
 /**
@@ -59,5 +60,16 @@ export function getState (toggle) {
   return {
     type: GET_STATE,
     payload: toggle
+  }
+}
+
+/**
+ *
+ *
+ * */
+export function setProcessInfo (processingInfo) {
+  return {
+    type: SET_PROCESSING_INFO,
+    payload: processingInfo
   }
 }

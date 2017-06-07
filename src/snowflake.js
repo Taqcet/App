@@ -45,6 +45,15 @@ import {
  */
 import configureStore from './lib/configureStore'
 
+
+/**
+ * ## DEVICE INFO
+ *
+ * LETS DETERMINE DEVICE INFO
+ */
+var DeviceInfo = require('react-native-device-info');
+
+
 /**
  * ### Translations
  */
@@ -83,7 +92,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
  * ## Actions
  *  The necessary actions for dispatching our bootstrap values
  */
-import {setPlatform, setVersion} from './reducers/device/deviceActions'
+import {setPlatform, setVersion, setDeviceInfo} from './reducers/device/deviceActions'
 import {setStore} from './reducers/global/globalActions'
 
 /**
@@ -95,6 +104,8 @@ import AuthInitialState from './reducers/auth/authInitialState'
 import DeviceInitialState from './reducers/device/deviceInitialState'
 import GlobalInitialState from './reducers/global/globalInitialState'
 import ProfileInitialState from './reducers/profile/profileInitialState'
+import MessagesInitialState from './reducers/messages/messagesInitialState'
+import LocationInitialState from './reducers/location/locationInitialState'
 
 /**
  *  The version of the app but not  displayed yet
@@ -109,20 +120,27 @@ var VERSION = pack.version
  * @returns {Object} object with 4 keys
  */
 function getInitialState () {
-  const _initState = {
+  return {
     auth: new AuthInitialState(),
     device: (new DeviceInitialState()).set('isMobile', true),
     global: (new GlobalInitialState()),
-    profile: new ProfileInitialState()
-  }
-  return _initState
+    profile: new ProfileInitialState(),
+    messages:new MessagesInitialState(),
+    location:new LocationInitialState(),
+  };
 }
 
 const styles = StyleSheet.create({
   tabBar: {
     height: 70
   }
-})
+});
+
+
+
+
+
+
 
 /**
  * ## TabIcon
@@ -159,10 +177,20 @@ export default function native (platform) {
             // it will then create the store based on aggregate state from all reducers
       store.dispatch(setPlatform(platform))
       store.dispatch(setVersion(VERSION))
-      store.dispatch(setStore(store))
+      store.dispatch(setStore(store));
+      var device = {
+        device_brand: DeviceInfo.getBrand(),
+        device_unique_id: DeviceInfo.getUniqueID(),
+        device_id: DeviceInfo.getDeviceId(),
+        device_country: DeviceInfo.getDeviceCountry(),
+        device_locale: DeviceInfo.getDeviceLocale(),
+        device_emulator: DeviceInfo.isEmulator()
+      };
+      store.dispatch(setDeviceInfo(device))
 
-            // setup the router table with App selected as the initial component
-            // note: See https://github.com/aksonov/react-native-router-flux/issues/948
+
+      // setup the router table with App selected as the initial component
+      // note: See https://github.com/aksonov/react-native-router-flux/issues/948
       return (
 
         <Provider store={store}>

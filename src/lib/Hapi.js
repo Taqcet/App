@@ -16,6 +16,7 @@
 import CONFIG from './config'
 import _ from 'underscore'
 import Backend from './Backend'
+import 'whatwg-fetch'
 
 export class Hapi extends Backend {
   /**
@@ -25,9 +26,10 @@ export class Hapi extends Backend {
    * @throws tokenMissing if token is undefined
    */
   initialize (token) {
-    if (!_.isNull(token) && _.isUndefined(token.sessionToken)) {
-      throw new Error('TokenMissing')
-    }
+    console.log('TOKEN+>>>>', token);
+    //if (!_.isNull(token) && _.isUndefined(token.sessionToken)) {
+    //  throw new Error('TokenMissing')
+    //}
     this._sessionToken =
       _.isNull(token) ? null : token.sessionToken.sessionToken
 
@@ -221,45 +223,50 @@ export class Hapi extends Backend {
    *   json: response.json()
    */
   async _fetch (opts) {
+    const checkStatus = (response) => {
+      if (response.status >= 200 && response.status < 300) {
+        return response;
+      }
+      const error = new Error(response.statusText);
+      error.response = response;
+      throw error;
+    };
+    const parseJSON = (response) => {
+      return response.json();
+    };
+
+
     opts = _.extend({
       method: 'GET',
       url: null,
       body: null,
       callback: null
-    }, opts)
-
+    }, opts);
     var reqOpts = {
       method: opts.method,
       headers: {
+        //credentials: "same-origin"
       }
-    }
-
+    };
     if (this._sessionToken) {
-      reqOpts.headers['Authorization'] = 'Bearer ' + this._sessionToken
+      //reqOpts.headers['Authorization'] = 'Bearer ' + this._sessionToken
     }
-
-    if (opts.method === 'POST' || opts.method === 'PUT') {
-      reqOpts.headers['Accept'] = 'application/json'
-      reqOpts.headers['Content-Type'] = 'application/json'
+    if (/POST|PUT/i.test(opts.method)) {
+       reqOpts.headers['Accept'] = 'application/json'
+       reqOpts.headers['Content-Type'] = 'application/json'
     }
 
     if (opts.body) {
-      reqOpts.body = JSON.stringify(opts.body)
+      reqOpts.body = JSON.stringify(opts.body);
     }
+    let url = this.API_BASE_URL + opts.url;
 
-    let url = this.API_BASE_URL + opts.url
-    let res = {}
-
-    let response = await fetch(url, reqOpts)
-    res.status = response.status
-    res.code = response.code
-
-    return response.json()
-      .then((json) => {
-        res.json = json
-        return res
-      })
+    console.log(url,reqOpts);
+    return fetch(url, {...reqOpts})
+          .then(checkStatus)
+          .then(parseJSON)
+          .catch(err=>console.log(err));
   }
 }
 // The singleton variable
-export let hapi = new Hapi()
+export let hapi = new Hapi();

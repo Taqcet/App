@@ -44,7 +44,7 @@ const {
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAILURE
 
-} = require('../../lib/constants').default
+} = require('../../lib/constants').default;
 
 /**
  * Project requirements
@@ -55,7 +55,7 @@ import {Actions} from 'react-native-router-flux'
 
 import {appAuthToken} from '../../lib/AppAuthToken'
 
-const _ = require('underscore')
+const _ = require('underscore');
 
 /**
  * ## State actions
@@ -128,18 +128,15 @@ export function logout () {
   return dispatch => {
     dispatch(logoutRequest())
     return appAuthToken.getSessionToken()
-
       .then((token) => {
         return BackendFactory(token).logout()
       })
-
       .then(() => {
         dispatch(loginState())
         dispatch(logoutSuccess())
         dispatch(deleteSessionToken())
         Actions.InitialLoginForm()
       })
-
       .catch((error) => {
         dispatch(loginState())
         dispatch(logoutFailure(error))
@@ -218,7 +215,7 @@ export function deleteTokenRequestSuccess () {
  */
 export function deleteSessionToken () {
   return dispatch => {
-    dispatch(deleteTokenRequest())
+    dispatch(deleteTokenRequest());
     return appAuthToken.deleteSessionToken()
       .then(() => {
         dispatch(deleteTokenRequestSuccess())
@@ -231,29 +228,55 @@ export function deleteSessionToken () {
  * so set the state to logout.
  * Otherwise, the user will default to the login in screen.
  */
+
+//export function getSessionToken () {
+//  console.log(appAuthToken);
+//  return dispatch => {
+//    dispatch(sessionTokenRequest())
+//    return appAuthToken.getSessionToken('TAQCET_USER')
+//      .then((token) => {
+//        console.log(token);
+//        if (token) {
+//          dispatch(sessionTokenRequestSuccess(token))
+//          dispatch(logoutState());
+//          Actions.Tabbar()
+//        } else {
+//          dispatch(sessionTokenRequestFailure());
+//          Actions.InitialLoginForm()
+//        }
+//      })
+//      .catch((error) => {
+//        dispatch(sessionTokenRequestFailure(error));
+//        dispatch(loginState());
+//        Actions.InitialLoginForm()
+//      })
+//  }
+//}
+
 export function getSessionToken () {
   return dispatch => {
     dispatch(sessionTokenRequest())
     return appAuthToken.getSessionToken()
-
       .then((token) => {
         if (token) {
           dispatch(sessionTokenRequestSuccess(token))
-          dispatch(logoutState())
-          Actions.Tabbar()
         } else {
-          dispatch(sessionTokenRequestFailure())
-          Actions.InitialLoginForm()
+          return appAuthToken.getSessionToken('TAQCET_USER')
+          .then((t)=>{
+            dispatch(sessionTokenRequestSuccess(token))
+          })
         }
       })
-
       .catch((error) => {
-        dispatch(sessionTokenRequestFailure(error))
-        dispatch(loginState())
+        dispatch(sessionTokenRequestFailure(error));
+        dispatch(loginState());
         Actions.InitialLoginForm()
       })
   }
 }
+
+
+
 
 /**
  * ## saveSessionToken
@@ -282,7 +305,6 @@ export function signup (username, email, password) {
       email: email,
       password: password
     })
-
       .then((json) => {
         return saveSessionToken(
           Object.assign({}, json,

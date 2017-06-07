@@ -16,10 +16,11 @@ import InitialState from './deviceInitialState'
  */
 const {
   SET_PLATFORM,
-  SET_VERSION
-} = require('../../lib/constants').default
+  SET_VERSION,
+  SET_DEVICE_INFO
+} = require('../../lib/constants').default;
 
-const initialState = new InitialState()
+const initialState = new InitialState();
 
 /**
  * ## deviceReducer function
@@ -30,7 +31,14 @@ export default function deviceReducer (state = initialState, action) {
   if (!(state instanceof InitialState)) return initialState.merge(state)
 
   switch (action.type) {
-
+    case SET_DEVICE_INFO:
+          return state.set('device_brand',action.device_brand)
+                      .set('device_unique_id',action.device_unique_id)
+                      .set('device_id',action.device_id)
+                      .set('device_country',action.device_country)
+                      .set('device_locale',action.device_locale)
+                      .set('device_emulator',action.device_emulator)
+                      .set('device_finger_print_enabled',action.device_finger_print_enabled);
     /**
      * ### set the platform in the state
      *

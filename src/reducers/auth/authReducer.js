@@ -3,7 +3,7 @@
  *
  * The reducer for all the actions from the various log states
  */
-'use strict'
+'use strict';
 /**
  * ## Imports
  * The InitialState for auth

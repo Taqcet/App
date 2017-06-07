@@ -11,9 +11,9 @@
  *
  * redux functions
  */
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'
-
+import {composeWithDevTools} from 'remote-redux-devtools';
 /**
 * ## Reducer
 * The reducer contains the 4 reducers from
@@ -25,10 +25,8 @@ import reducer from '../reducers'
  * ## creatStoreWithMiddleware
  * Like the name...
  */
-const createStoreWithMiddleware = applyMiddleware(
-  thunk
-)(createStore)
-
+//const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
+const composeEnhancers = composeWithDevTools({ realtime: true});
 /**
  * ## configureStore
  * @param {Object} the state with for keys:
@@ -36,5 +34,13 @@ const createStoreWithMiddleware = applyMiddleware(
  *
  */
 export default function configureStore (initialState) {
-  return createStoreWithMiddleware(reducer, initialState)
+  //return createStoreWithMiddleware(reducer, initialState)
+  const store = createStore(
+    reducer,
+    initialState,
+    composeEnhancers(
+      applyMiddleware(thunk)
+    )
+  );
+  return store;
 }

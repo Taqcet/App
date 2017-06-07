@@ -22,8 +22,9 @@ const {
 
   GET_STATE,
   SET_STATE,
-  SET_STORE
+  SET_STORE,
 
+  SET_PROCESSING_INFO
 } = require('../../lib/constants').default
 
 import InitialState from './globalInitialState'
@@ -38,6 +39,8 @@ export default function globalReducer (state = initialState, action) {
   if (!(state instanceof InitialState)) return initialState.merge(state)
 
   switch (action.type) {
+    case SET_PROCESSING_INFO:
+      return state.set('processingInfo', action.payload)
     /**
      * ### Save the sessionToken
      */
@@ -94,15 +97,15 @@ export default function globalReducer (state = initialState, action) {
 
       if (action.payload) {
         let newState = {}
-        newState['auth'] = _state.auth.toJS()
-        newState['device'] = _state.device.toJS()
-        newState['profile'] = _state.profile.toJS()
+        newState['auth'] = _state.auth.toJS();
+        newState['device'] = _state.device.toJS();
+        newState['profile'] = _state.profile.toJS();
 
       // Make sure global doesn't have the previous currentState
         // let _noCurrentState =  _state.global.set('currentState',null);
         // let _noStore = _noCurrentState.set('store',null);
 
-        newState['global'] = _state.global.set('currentState', null).set('store', null).toJS()
+        newState['global'] = _state.global.set('currentState', null).set('store', null).toJS();
 
         return state.set('showState', action.payload)
         .set('currentState', newState)
@@ -118,7 +121,7 @@ export default function globalReducer (state = initialState, action) {
      *
      */
     case SET_STATE:
-      var global = JSON.parse(action.payload).global
+      var global = JSON.parse(action.payload).global;
       var next = state.set('currentUser', global.currentUser)
           .set('showState', false)
           .set('currentState', null)

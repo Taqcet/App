@@ -22,7 +22,14 @@ import {Record} from 'immutable'
 var InitialState = Record({
   isMobile: false,
   platform: '',
-  version: null
+  version: null,
+  device_brand: null,
+  device_unique_id: null,
+  device_id: null,
+  device_country: null,
+  device_locale: null,
+  device_emulator: null,
+  device_finger_print_enabled: null
 })
 
 export default InitialState
