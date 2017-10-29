@@ -154,7 +154,7 @@ class Profile extends Component {
    */
   componentDidMount () {
     if (this.props.profile.form.fields.username === '' && this.props.profile.form.fields.email === '') {
-      this.props.actions.getProfile(this.props.global.currentUser)
+      //this.props.actions.getProfile(this.props.global.currentUser)
     } else {
       this.setState({
         formValues: {

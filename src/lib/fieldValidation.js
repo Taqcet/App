@@ -47,11 +47,21 @@ const usernameConstraints = {
   }
 }
 
+
+
+
+
+
+
+
+
 /**
 * ## password validation rule
 * read the message... ;)
 */
-const passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,12}$/
+//const passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,12}$/
+
+const passwordPattern = /^(?=.*[0-9])[0-9]{6,8}$/
 const passwordConstraints = {
   password: {
     format: {
@@ -73,7 +83,35 @@ const passwordAgainConstraints = {
  * @param {Object} action type & payload
  */
 export default function fieldValidation (state, action) {
-  const {field, value} = action.payload
+  const {field, value} = action.payload;
+  /**
+   * ## nationalid & mobile rule uses state info validation rule
+   * read the message... ;)
+   *
+   * It should be dynamic length based on country
+   *
+   * => state.props.global.country.validation.nationalidLength
+   * =>state.props.global.country.validation.mobileLength
+   */
+  const nationalidPattern = new RegExp(`^(?=.*[0-9])[0-9]{14}$`)
+  const nationalidConstraints = {
+    nationalid: {
+      format: {
+        pattern: nationalidPattern,
+        flags: 'i'
+      }
+    }
+  }
+  const mobilePattern = new RegExp(`^(?=.*[0-9])[0-9]{11}$`)
+  const mobileConstraints = {
+    mobile: {
+      format: {
+        pattern: mobilePattern,
+        flags: 'i'
+      }
+    }
+  }
+
 
   switch (field) {
     /**
@@ -94,6 +132,38 @@ export default function fieldValidation (state, action) {
       }
     }
 
+
+
+
+    case ('nationalid'): {
+      let validNationalid = _.isUndefined(validate({nationalid: value},
+                                                 nationalidConstraints))
+      if (validNationalid) {
+        return state.setIn(['form', 'fields', 'nationalidHasError'],
+                           false)
+          .setIn(['form', 'fields', 'nationalidErrorMsg'], '')
+      } else {
+        return state.setIn(['form', 'fields', 'nationalidHasError'], true)
+          .setIn(['form', 'fields', 'nationalidErrorMsg'],
+                 I18n.t('FieldValidation.valid_nationalid'))
+      }
+    }
+
+
+
+    case ('mobile'): {
+      let validMobile = _.isUndefined(validate({mobile: value},
+                                               mobileConstraints))
+      if (validMobile) {
+        return state.setIn(['form', 'fields', 'mobileHasError'],
+                           false)
+          .setIn(['form', 'fields', 'mobileErrorMsg'], '')
+      } else {
+        return state.setIn(['form', 'fields', 'mobileHasError'], true)
+          .setIn(['form', 'fields', 'mobileErrorMsg'],
+                 I18n.t('FieldValidation.valid_mobile'))
+      }
+    }
     /**
      * ### email validation
      * set the form field error

@@ -58,3 +58,7 @@ coverage
 
 # app configuration
 src/lib/config.js
+
+
+#release
+android/app/my-release-key.keystore

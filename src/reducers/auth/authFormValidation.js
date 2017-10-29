@@ -34,15 +34,17 @@ export default function formValidation (state) {
      * ### Registration has 4 fields
      */
     case REGISTER:
-      if (state.form.fields.username !== '' &&
+      if (
           state.form.fields.email !== '' &&
           state.form.fields.password !== '' &&
           state.form.fields.passwordAgain !== '' &&
-          !state.form.fields.usernameHasError &&
+          state.form.fields.nationalID !== ''&&
+          state.form.fields.mobile !== ''&&
+          !state.form.fields.mobileHasError &&
           !state.form.fields.emailHasError &&
           !state.form.fields.passwordHasError &&
-        !state.form.fields.passwordAgainHasError) {
-        return state.setIn(['form', 'isValid'], true)
+          !state.form.fields.passwordAgainHasError) {
+          return state.setIn(['form', 'isValid'], true)
       } else {
         return state.setIn(['form', 'isValid'], false)
       }
@@ -50,9 +52,9 @@ export default function formValidation (state) {
      * ### Login has 2 fields
      */
     case LOGIN:
-      if (state.form.fields.username !== '' &&
+      if (state.form.fields.email !== '' &&
           state.form.fields.password !== '' &&
-          !state.form.fields.usernameHasError &&
+          !state.form.fields.emailHasError &&
           !state.form.fields.passwordHasError) {
         return state.setIn(['form', 'isValid'], true)
       } else {

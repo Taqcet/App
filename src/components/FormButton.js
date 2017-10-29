@@ -15,7 +15,7 @@ import
   StyleSheet,
   View
 } from 'react-native'
-
+import colors from '../config/Colors';
 /**
  * The platform neutral button
  */
@@ -27,13 +27,26 @@ const Button = require('apsl-react-native-button')
 var styles = StyleSheet.create({
   signin: {
     marginLeft: 10,
-    marginRight: 10
-  },
-  button: {
-    backgroundColor: '#FF3366',
-    borderColor: '#FF3366'
-  }
+    marginRight: 10,
 
+  },
+  outline: {
+    backgroundColor: 'transparent',
+    borderColor: colors.lightBlue,
+    borderWidth:2,
+    borderRadius:2,
+    minWidth:300,
+    maxWidth:400,
+  },
+
+  fill: {
+     backgroundColor: colors.blue,
+     borderColor: colors.lightBlue,
+     borderWidth:2,
+     borderRadius:2,
+     minWidth:300,
+     maxWidth:400,
+  }
 })
 
 var FormButton = React.createClass({
@@ -43,10 +56,13 @@ var FormButton = React.createClass({
    * Display the Button
    */
   render () {
+
     return (
       <View style={styles.signin}>
-        <Button style={styles.button}
-          textStyle={{fontSize: 18}}
+        <Button
+          style={this.props.fill?styles.fill:styles.outline}
+          textStyle={{fontSize: 18, color:this.props.fill?colors.white:colors.blue,
+          fontFamily:"SharpSansNo1-MediumItalic"}}
           isDisabled={this.props.isDisabled}
           onPress={this.props.onPress} >
           {this.props.buttonText}

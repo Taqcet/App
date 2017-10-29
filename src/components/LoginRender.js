@@ -50,8 +50,7 @@ import ItemCheckbox from '../components/ItemCheckbox'
  * The necessary React components
  */
 import React, {Component} from 'react'
-import
-{
+import{
   StyleSheet,
   ScrollView,
   Text,
@@ -92,6 +91,9 @@ var styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 10,
     marginRight: 10
+  },
+  submitButton:{
+    marginTop: 10
   }
 })
 /**
@@ -116,8 +118,9 @@ class LoginRender extends Component {
     this.errorAlert = new ErrorAlert()
     this.state = {
       value: {
-        username: this.props.auth.form.fields.username,
+        nationalid: this.props.auth.form.fields.nationalid,
         email: this.props.auth.form.fields.email,
+        mobile: this.props.auth.form.fields.mobile,
         password: this.props.auth.form.fields.password,
         passwordAgain: this.props.auth.form.fields.passwordAgain
       }
@@ -131,8 +134,9 @@ class LoginRender extends Component {
   componentWillReceiveProps (nextprops) {
     this.setState({
       value: {
-        username: nextprops.auth.form.fields.username,
+        nationalid: nextprops.auth.form.fields.nationalid,
         email: nextprops.auth.form.fields.email,
+        mobile: nextprops.auth.form.fields.mobile,
         password: nextprops.auth.form.fields.password,
         passwordAgain: nextprops.auth.form.fields.passwordAgain
       }
@@ -149,11 +153,14 @@ class LoginRender extends Component {
    * *Note* that the fields are validated by the authReducer
    */
   onChange (value) {
-    if (value.username !== '') {
-      this.props.actions.onAuthFormFieldChange('username', value.username)
+    if (value.national_id !== '') {
+      this.props.actions.onAuthFormFieldChange('nationalid', value.nationalid)
     }
     if (value.email !== '') {
       this.props.actions.onAuthFormFieldChange('email', value.email)
+    }
+    if (value.mobile !== '') {
+      this.props.actions.onAuthFormFieldChange('mobile', value.mobile)
     }
     if (value.password !== '') {
       this.props.actions.onAuthFormFieldChange('password', value.password)
@@ -216,17 +223,21 @@ class LoginRender extends Component {
     var formType = this.props.formType
     var loginButtonText = this.props.loginButtonText
     var onButtonPress = this.props.onButtonPress
+    var onSwitch = this.props.onSwitch
+
+
     var displayPasswordCheckbox = this.props.displayPasswordCheckbox
     var leftMessageType = this.props.leftMessageType
     var rightMessageType = this.props.rightMessageType
 
-    var passwordCheckbox = <Text />
+    var passwordCheckbox = <Text/>
     let leftMessage = this.getMessage(leftMessageType, this.props.actions)
     let rightMessage = this.getMessage(rightMessageType, this.props.actions)
 
-    let self = this
+    let self = this;
 
     // display the login / register / change password screens
+
     this.errorAlert.checkError(this.props.auth.form.error)
 
     /**
@@ -273,16 +284,19 @@ class LoginRender extends Component {
               {passwordCheckbox}
             </View>
 
-            <FormButton
-              isDisabled={!this.props.auth.form.isValid || this.props.auth.form.isFetching}
-              onPress={onButtonPress}
-              buttonText={loginButtonText} />
-
             <View >
               <View style={styles.forgotContainer}>
                 {leftMessage}
                 {rightMessage}
               </View>
+            </View>
+
+            <View style={styles.submitButton}>
+              <FormButton
+                fill={true}
+                isDisabled={this.props.auth.form.isFetching || !this.props.auth.form.isValid}
+                onPress={onButtonPress}
+                buttonText={loginButtonText} />
             </View>
 
           </View>

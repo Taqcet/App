@@ -13,7 +13,10 @@
  * React
  */
 import React, {PropTypes} from 'react'
+import {Actions} from 'react-native-router-flux'
+import {View, Button} from 'react-native'
 
+import FormButton from '../components/FormButton'
 /**
  * States of login display
  */
@@ -26,15 +29,38 @@ const {
 /**
  *  The fantastic little form library
  */
-const t = require('tcomb-form-native')
-let Form = t.form.Form
+const t = require('tcomb-form-native');
+
+t.form.Form.stylesheet = Object.assign(t.form.Form.stylesheet,
+                                       {
+                                         textbox:{
+                                           normal: {
+                                             borderRadius: 2,
+                                           },
+                                           error: {
+                                             borderRadius: 2,
+                                           },
+                                           notEditable: {
+                                             borderRadius: 2,
+                                           }
+                                         }
+                                       });
+
+console.log(t.form.Form.stylesheet);
+
+let Form = t.form.Form;
+
+
+
+
+
 
 /**
  * ### Translations
  */
 var I18n = require('react-native-i18n')
 import Translations from '../lib/Translations'
-I18n.translations = Translations
+I18n.translations = Translations;
 
 var LoginForm = React.createClass({
   /**
@@ -73,6 +99,29 @@ var LoginForm = React.createClass({
       error: this.props.form.fields.usernameErrorMsg
     }
 
+    let nationalid = {
+      label: I18n.t('LoginForm.nationalid'),
+      maxLength: 14,
+      editable: !this.props.form.isFetching,
+      hasError: this.props.form.fields.nationalidHasError,
+      error: this.props.form.fields.nationalidErrorMsg
+    }
+
+    let mobile = {
+      label: I18n.t('LoginForm.mobile'),
+      maxLength: 11,
+      editable: !this.props.form.isFetching,
+      hasError: this.props.form.fields.mobileHasError,
+      error: this.props.form.fields.mobileErrorMsg
+    }
+    //SAVED FOR LATER
+    let country = {
+      label: I18n.t('Country.label'),
+
+    }
+
+
+
     let email = {
       label: I18n.t('LoginForm.email'),
       keyboardType: 'email-address',
@@ -101,7 +150,7 @@ var LoginForm = React.createClass({
       error: this.props.form.fields.passwordAgainErrorMsg
     }
 
-    let loginForm
+    let loginForm;
     switch (formType) {
       /**
        * ### Registration
@@ -109,14 +158,23 @@ var LoginForm = React.createClass({
        */
       case (REGISTER):
         loginForm = t.struct({
-          username: t.String,
+          //country: t.String,
+          nationalid: t.String,
           email: t.String,
+          mobile: t.String,
           password: t.String,
           passwordAgain: t.String
-        })
-        options.fields['username'] = username
-        options.fields['username'].placeholder = I18n.t('LoginForm.username')
-        options.fields['username'].autoCapitalize = 'none'
+        });
+
+        //options.fields['country'] = country
+        //options.fields['country'].placeholder = I18n.t('Country.label')
+        //options.fields['country'].autoCapitalize = 'none'
+        options.fields['nationalid'] = nationalid
+        options.fields['nationalid'].placeholder = I18n.t('LoginForm.nationalid')
+        options.fields['nationalid'].autoCapitalize = 'none'
+        options.fields['mobile'] = mobile
+        options.fields['mobile'].placeholder = I18n.t('LoginForm.mobile')
+        options.fields['mobile'].autoCapitalize = 'none'
         options.fields['email'] = email
         options.fields['email'].placeholder = I18n.t('LoginForm.email')
         options.fields['email'].autoCapitalize = 'none'
@@ -132,12 +190,12 @@ var LoginForm = React.createClass({
        */
       case (LOGIN):
         loginForm = t.struct({
-          username: t.String,
+          email: t.String,
           password: t.String
         })
-        options.fields['username'] = username
-        options.fields['username'].placeholder = I18n.t('LoginForm.username')
-        options.fields['username'].autoCapitalize = 'none'
+        options.fields['email'] = email
+        options.fields['email'].placeholder = I18n.t('LoginForm.email')
+        options.fields['email'].autoCapitalize = 'none'
         options.fields['password'] = password
         options.fields['password'].placeholder = I18n.t('LoginForm.password')
         break
@@ -155,20 +213,19 @@ var LoginForm = React.createClass({
         options.fields['email'].placeholder = I18n.t('LoginForm.email')
         break
     } // switch
-
     /**
      * ### Return
      * returns the Form component with the correct structures
      */
-    return (
-      <Form ref='form'
-        type={loginForm}
-        options={options}
-        value={this.props.value}
-        onChange={this.props.onChange}
-      />
-
-    )
+    return <View>
+            <Form
+              ref='form'
+              type={loginForm}
+              options={options}
+              value={this.props.value}
+              onChange={this.props.onChange}
+              />
+          </View>
   }
 })
 

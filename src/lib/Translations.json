@@ -56,6 +56,17 @@
     }
   },
   "en": {
+    "wait":"Please wait ...",
+    "ack":"Acknowledge",
+    "confirm":"Confirm",
+    "internetError":{
+      "message":"Ops! We couldn't connect to the server. Check the internet Connection",
+      "action":"Try Again"
+    },
+    "Country":{
+      "label":"Country",
+      "egypt": "Egypt"
+    },
     "App": {
       "version": "Version"
     },
@@ -69,12 +80,28 @@
       "back": "Back"
     },
     "Snowflake": {
+      "overview": "Overview",
+      "wallet": "History",
       "logout": "Log out",
-      "main": "Main",
-      "profile":"Profile"
+      "main": "Authenticate",
+      "profile":"Settings"
     },
     "Main": {
-      "navigate": "Navigate to Subview"
+      "navigate": "Navigate to Subview",
+      "notVerified":"User Not Verified, Pending Verification",
+      "pendingAuth":"Authentication Request"
+    },
+    "Auth":{
+      "authenticating":"Authenticating Purchase, Please Wait",
+      "purchaseRequest":"Purchase Request",
+      "from":"From: ",
+      "amount":"Amount: ",
+      "date":"Request Date: ",
+      "confirm":"Confirm Purchase",
+      "maxTrialsReached":"Your Purchase Request is Rejected, due to too many unsuccessful authentication",
+      "remainingTrials":"Number of trials remaining",
+      "purchaseSuccess":"Purchase Successful",
+      "purchaseSuccessMessage":"Thank you for shopping with us, your first payment will be in 30 days"
     },
     "Profile": {
       "username": "User name",
@@ -84,7 +111,8 @@
       "display": "display only"
     },
     "LoginForm": {
-      "username": "User name",
+      "nationalid":"National ID Number",
+      "mobile":"Mobile",
       "email": "Email",
       "password": "Password",
       "password_again": "Password again"
@@ -105,10 +133,59 @@
       "register": "Register"
     },
     "FieldValidation": {
+      "valid_nationalid":"Please provide your unique national id and make sure its 14 number",
+      "valid_mobile":"Make sure its 11 number, we will validate it",
       "valid_user_name": "6-12 in length with letters or numbers",
       "valid_email": "Provide valid email",
-      "valid_password": "6-12 in length, with a number and special character: !@#$%^&*",
+      "valid_password": "please provide 6-8 digit number in length, make sure they are unique",
       "valid_password_again": "Passwords must match"
+    },
+    "ValidatePerson": {
+      "header":"Identification Validation Process",
+      "prepareTheirIDHeader":"Please, Prepare Your National ID Card",
+      "prepareTheirIDBody":"We will take a picture for each side of your id. Prepare the front side of the ID. make sure you are in light enviroment",
+      "prepareTheirIDAction":"Take the ID Front Side Picture",
+
+      "takeFirstPic":"Front Side of the ID",
+      "capture":"Capture",
+
+      "confirmTakeFirstPicHeader":"Is the image clear?",
+      "confirmTakeFirstPicMessage":"Make Sure the picture you took a crystal clear photo, it might affect your acceptance",
+      "goToNextImage":"Go take the second Picture",
+      "retakeFirstPicture":"Retake First picture",
+
+      "takeSecondPic":"Back Side of the ID",
+
+
+      "confirmTakeSecondPicHeader":"Is the image clear?",
+      "confirmTakeSecondPicMessage":"Make Sure the picture you took a crystal clear photo, it might affect your acceptance",
+      "goToNextVideo":"Go Final Confirmation",
+      "retakeSecondPicture":"Retake Back Side Picture picture",
+
+      "HowVideoWorksHeader":"",
+      "HowVideoWorksMessage":"",
+      "HowVideoWorksTips":"",
+      "StartVideo":"Record Video",
+
+      "Record":"Record Video",
+
+      "ConfirmVideoHeader":"Confirm Video",
+      "ConfirmVideoMessage":"blablabla",
+      "RetakeVideo":"Retake Video",
+      "Submit":"Submit to Join Taqcet",
+
+      "mobile":"Mobile",
+      "email": "Email",
+      "password": "Password",
+      "password_again": "Password again",
+
+
+      "uploadingMessage":"Uploading",
+      "uploadingBody":"be patient, it might take a minute to 5 minute depending on your internet connection",
+      "uploadingError":"Something went wrong, try uploading your info again",
+      "uploadingSuccessMessage":"Thank you",
+      "uploadingSuccessBody":"Your information has been submitted. We will verify your account shortly. It can take minutes to hours",
+      "toHomePage":"Next",
     }
   },
   "fr": {
@@ -118,12 +195,12 @@
     "Header": {
       "current_state": "état actuel",
       "see_console": "voir console",
-      "update_state": "état de mise à jour"      
-    },    
+      "update_state": "état de mise à jour"
+    },
     "Subview": {
       "subview": "Sous-vue",
       "back": "Arrière"
-    },    
+    },
     "Snowflake": {
       "logout": "Se déconnecter",
       "main": "Principal",
@@ -137,7 +214,7 @@
       "email": "Email",
       "update": "Mettre à jour le profil",
       "verified": "Email verifié",
-      "display": "afficher seulement"      
+      "display": "afficher seulement"
     },
     "LoginForm": {
       "username": "Nom d'utilisateur",
@@ -149,7 +226,7 @@
       "forgot_password": "Mot de passe oublié?",
       "already_have_account": "Vous avez déjà compte?",
       "register": "Registre",
-      "show_password": "Montrer le mot de passe"      
+      "show_password": "Montrer le mot de passe"
     },
     "ForgotPassword": {
       "reset_password": "Réinitialiser le mot de passe"
@@ -165,7 +242,7 @@
       "valid_email": "Fournir email valide",
       "valid_password": "6-12 en longueur, avec un nombre et un caractère spécial: !@#$%^&*",
       "valid_password_again": "les mots de passe doivent correspondre"
-    }    
+    }
   },
   "es": {
     "App": {
@@ -174,12 +251,12 @@
     "Header": {
       "current_state": "Estado actual",
       "see_console": "ver la consola",
-      "update_state": "Estado de actualización"      
-    },    
+      "update_state": "Estado de actualización"
+    },
     "Subview": {
       "subview": "Subview",
       "back": "Regresar"
-    },    
+    },
     "Snowflake": {
       "logout": "Cerrar sesión",
       "main": "Principal",
@@ -205,7 +282,7 @@
       "forgot_password": "¿Olvidaste tu contraseña?",
       "already_have_account": "¿Ya tienes cuenta?",
       "register": "Registrarse",
-      "show_password": "Mostrar Contraseña"      
+      "show_password": "Mostrar Contraseña"
     },
     "ForgotPassword": {
       "reset_password": "Restablecer la contraseña"
@@ -221,7 +298,7 @@
       "valid_email": "Proveer de correo electrónico válida",
       "valid_password": "6-12 de longitud, con un número y carácter especial: !@#$%^&*",
       "valid_password_again": "Las contraseñas deben coincidir"
-    }    
+    }
   }
 
 }

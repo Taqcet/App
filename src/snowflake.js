@@ -25,17 +25,14 @@ import {
  *
  * Necessary components from Router-Flux
  */
-import {
-    Router,
-    Scene} from 'react-native-router-flux'
+import {Router, Scene} from 'react-native-router-flux'
 
 /**
  * ### Redux
  *
  * ```Provider``` will tie the React-Native to the Redux store
  */
-import {
-    Provider} from 'react-redux'
+import {Provider} from 'react-redux'
 
 /**
  * ### configureStore
@@ -78,7 +75,9 @@ import Register from './containers/Register'
 import ForgotPassword from './containers/ForgotPassword'
 import Profile from './containers/Profile'
 import Main from './containers/Main'
+import Auth from './containers/Auth'
 import Subview from './containers/Subview'
+import ValidatePerson from './containers/ValidatePerson'
 
 /**
  * ### icons
@@ -86,7 +85,7 @@ import Subview from './containers/Subview'
  * Add icon support for use in Tabbar
  *
  */
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/SimpleLineIcons'
 
 /**
  * ## Actions
@@ -106,6 +105,7 @@ import GlobalInitialState from './reducers/global/globalInitialState'
 import ProfileInitialState from './reducers/profile/profileInitialState'
 import MessagesInitialState from './reducers/messages/messagesInitialState'
 import LocationInitialState from './reducers/location/locationInitialState'
+import ValidatePersonInitialState from './reducers/validatePerson/validatePersonInitialState'
 
 /**
  *  The version of the app but not  displayed yet
@@ -127,6 +127,7 @@ function getInitialState () {
     profile: new ProfileInitialState(),
     messages:new MessagesInitialState(),
     location:new LocationInitialState(),
+    validatePerson:new ValidatePersonInitialState(),
   };
 }
 
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
 
 
 
-
+import Colors from './config/Colors';
 /**
  * ## TabIcon
  *
@@ -149,11 +150,11 @@ const styles = StyleSheet.create({
  */
 class TabIcon extends React.Component {
   render () {
-    var color = this.props.selected ? '#FF3366' : '#FFB3B3'
+    var color = this.props.selected ? Colors.lightBlue : Colors.blue
     return (
       <View style={{flex: 1, flexDirection: 'column', alignItems: 'center', alignSelf: 'center'}}>
-        <Icon style={{color: color}} name={this.props.iconName} size={30} />
-        <Text style={{color: color}}>{this.props.title}</Text>
+        <Icon style={{color: color}} name={this.props.iconName} size={20} />
+        <Text style={{color: color,fontSize:14}}>{this.props.title}</Text>
       </View>
      )
   }
@@ -189,13 +190,14 @@ export default function native (platform) {
       store.dispatch(setDeviceInfo(device))
 
 
-      // setup the router table with App selected as the initial component
-      // note: See https://github.com/aksonov/react-native-router-flux/issues/948
-      return (
 
+
+
+      return (
         <Provider store={store}>
           <Router sceneStyle={{ backgroundColor: 'white' }}>
             <Scene key='root' hideNavBar>
+
               <Scene key='App'
                 component={App}
                 type='replace'
@@ -203,7 +205,7 @@ export default function native (platform) {
 
               <Scene key='InitialLoginForm'
                 component={Register}
-                type='replace' />
+                type='replace'/>
 
               <Scene key='Login'
                 component={Login}
@@ -217,8 +219,13 @@ export default function native (platform) {
                 component={ForgotPassword}
                 type='replace' />
 
+              <Scene key='ValidatePerson'
+                     component={ValidatePerson}
+                     type='replace' />
+
               <Scene key='Subview'
                 component={Subview} />
+
 
               <Scene key='Tabbar'
                 tabs
@@ -226,27 +233,36 @@ export default function native (platform) {
                 tabBarStyle={styles.tabBar}
                 default='Main'>
 
+                <Scene key='Overview'
+                       title={I18n.t('Snowflake.overview')}
+                       icon={TabIcon}
+                       iconName={'event'}
+                       hideNavBar
+                       component={Logout} />
+
+
                 <Scene key='Logout'
-                  title={I18n.t('Snowflake.logout')}
+                  title={I18n.t('Snowflake.wallet')}
                   icon={TabIcon}
-                  iconName={'sign-out'}
+                  iconName={'wallet'}
                   hideNavBar
                   component={Logout} />
 
                 <Scene key='Main'
                   title={I18n.t('Snowflake.main')}
-                  iconName={'home'}
+                  iconName={'lock'}
                   icon={TabIcon}
                   hideNavBar
-                  component={Main}
+                  component={Auth}
                   initial />
 
                 <Scene key='Profile'
                   title={I18n.t('Snowflake.profile')}
                   icon={TabIcon}
-                  iconName={'gear'}
+                  iconName={'settings'}
                   hideNavBar
                   component={Profile} />
+
               </Scene>
             </Scene>
           </Router>

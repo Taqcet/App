@@ -12,7 +12,8 @@
 /**
  * ## Import
  */
-import {Record} from 'immutable'
+import {Record} from 'immutable';
+import countries from '../../config/Countries'
 /**
  * ## InitialState
  *
@@ -29,8 +30,11 @@ import {Record} from 'immutable'
 var InitialState = Record({
   processingInfo: true,
   currentUser: null,
+  userVerified:0,
+  sessionToken:null,
   showState: false,
   currentState: null,
-  store: null
+  store: null,
+  country: countries.eg,
 })
 export default InitialState

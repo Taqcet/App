@@ -24,7 +24,9 @@ const {
   SET_STATE,
   SET_STORE,
 
-  SET_PROCESSING_INFO
+  SET_PROCESSING_INFO,
+  SET_USER,
+  SET_USER_VERIFICATION
 } = require('../../lib/constants').default
 
 import InitialState from './globalInitialState'
@@ -57,10 +59,14 @@ export default function globalReducer (state = initialState, action) {
     case SIGNUP_SUCCESS:
     case LOGIN_SUCCESS:
     case GET_PROFILE_SUCCESS:
-      return state.set('currentUser', action.payload)
+      if(action.payload)
+        return state.set('currentUser', action.payload)
+                    .set('userVerified',action.payload.user_verified);
+      else return state;
 
     case SESSION_TOKEN_SUCCESS:
-      return state.set('currentUser', action.payload.sessionToken)
+      return state.set('sessionToken', action.payload)
+
 
     /**
      * ### Clear currentUser
@@ -70,8 +76,10 @@ export default function globalReducer (state = initialState, action) {
      *
      */
     case LOGOUT_SUCCESS:
-
       return state.set('currentUser', null)
+                  .set('userVerified',0)
+                  .set('sessionToken', null)
+
 
     /**
      * ### sets the payload into the store
@@ -114,18 +122,36 @@ export default function globalReducer (state = initialState, action) {
       }
     }
 
-    /**
+
+    case SET_USER_VERIFICATION:
+      return state.set('userVerified', action.payload);
+
+
+
+
+
+
+  /**
      * ### Set the state
      *
      * This is in support of Hot Loading
      *
      */
+
+
+
+
     case SET_STATE:
-      var global = JSON.parse(action.payload).global;
-      var next = state.set('currentUser', global.currentUser)
-          .set('showState', false)
-          .set('currentState', null)
-      return next
+      try{
+        var global = JSON.parse(action.payload).global;
+        var next = state.set('currentUser', global.currentUser)
+            .set('showState', false)
+            .set('currentState', null)
+        return next
+      }
+      catch(err){
+
+      }
 
   }
 

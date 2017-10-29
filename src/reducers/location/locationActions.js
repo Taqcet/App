@@ -30,11 +30,11 @@ export function sendLocation (location, device) {
     delete location.coords;
     delete location.timestamp;
   }
-  console.log(location);
+
   return dispatch => {
     dispatch(setLocation(location));
     return BackendFactory()
-      ._fetch({method:'POST', url:'locations',body:{location:location}})
+      ._fetch({method:'POST', url:'/locations',body:{location:location}})
       .then((json) => {
         return dispatch(sendLocationSuccess())
       })

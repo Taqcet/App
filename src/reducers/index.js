@@ -16,6 +16,7 @@ import global from './global/globalReducer'
 import profile from './profile/profileReducer'
 import messages from './messages/messagesReducer'
 import location from './location/locationReducer'
+import validatePerson from './validatePerson/validatePersonReducer'
 
 import { combineReducers } from 'redux'
 
@@ -31,7 +32,8 @@ const rootReducer = combineReducers({
   global,
   profile,
   messages,
-  location
+  location,
+  validatePerson
 })
 
 export default rootReducer

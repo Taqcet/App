@@ -16,7 +16,7 @@
 import CONFIG from './config'
 import _ from 'underscore'
 import Backend from './Backend'
-import 'whatwg-fetch'
+//import 'whatwg-fetch'
 
 export class Hapi extends Backend {
   /**
@@ -26,16 +26,19 @@ export class Hapi extends Backend {
    * @throws tokenMissing if token is undefined
    */
   initialize (token) {
-    console.log('TOKEN+>>>>', token);
-    //if (!_.isNull(token) && _.isUndefined(token.sessionToken)) {
-    //  throw new Error('TokenMissing')
-    //}
+    if (!_.isNull(token) && _.isUndefined(token.sessionToken)) {
+      throw new Error('TokenMissing')
+    }
     this._sessionToken =
       _.isNull(token) ? null : token.sessionToken.sessionToken
 
     this.API_BASE_URL = CONFIG.backend.hapiLocal
           ? CONFIG.HAPI.local.url
-          : CONFIG.HAPI.remote.url
+          : CONFIG.HAPI.remote.url;
+
+    this.API_BASE_WS = CONFIG.backend.hapiLocal
+      ? CONFIG.HAPI.local.ws
+      : CONFIG.HAPI.remote.ws;
   }
   /**
    * ### signup
@@ -54,19 +57,19 @@ export class Hapi extends Backend {
   async signup (data) {
     return await this._fetch({
       method: 'POST',
-      url: '/account/register',
+      url: '/users/register',
       body: data
     })
-      .then((res) => {
-        if (res.status === 200 || res.status === 201) {
-          return res.json
-        } else {
-          throw res.json
-        }
-      })
-      .catch((error) => {
-        throw (error)
-      })
+    .then((res) => {
+      if (res && res.jwt) {
+        return res
+      } else {
+        throw "User is already registered"
+      }
+    })
+    .catch((error) => {
+      throw (error)
+    })
   }
   /**
    * ### login
@@ -89,14 +92,15 @@ export class Hapi extends Backend {
   async login (data) {
     return await this._fetch({
       method: 'POST',
-      url: '/account/login',
+      url: '/users/auth',
       body: data
     })
       .then((res) => {
-        if (res.status === 200 || res.status === 201) {
-          return res.json
+
+        if (res.valid) {
+          return res
         } else {
-          throw (res.json)
+          throw (res)
         }
       })
       .catch((error) => {
@@ -110,12 +114,10 @@ export class Hapi extends Backend {
   async logout () {
     return await this._fetch({
       method: 'POST',
-      url: '/account/logout',
+      url: '/users/logout',
       body: {}
-    })
-      .then((res) => {
-        if ((res.status === 200 || res.status === 201) ||
-            (res.status === 400 && res.code === 209)) {
+    }).then((res) => {
+        if (res.logout) {
           return {}
         } else {
           throw new Error({code: res.statusCode, error: res.message})
@@ -139,7 +141,7 @@ export class Hapi extends Backend {
   async resetPassword (data) {
     return await this._fetch({
       method: 'POST',
-      url: '/account/resetPasswordRequest',
+      url: '/users/resetPasswordRequest',
       body: data
     })
       .then((response) => {
@@ -174,7 +176,7 @@ export class Hapi extends Backend {
   async getProfile () {
     return await this._fetch({
       method: 'GET',
-      url: '/account/profile/me'
+      url: '/users/profile/me'
     })
       .then((res) => {
         if ((res.status === 200 || res.status === 201)) {
@@ -199,7 +201,7 @@ export class Hapi extends Backend {
   async updateProfile (userId, data) {
     return await this._fetch({
       method: 'POST',
-      url: '/account/profile/' + userId,
+      url: '/users/profile/' + userId,
       body: data
     })
       .then((res) => {
@@ -231,10 +233,9 @@ export class Hapi extends Backend {
       error.response = response;
       throw error;
     };
-    const parseJSON = (response) => {
-      return response.json();
+    const parseJSON = (returned) => {
+      return returned.json();
     };
-
 
     opts = _.extend({
       method: 'GET',
@@ -242,31 +243,82 @@ export class Hapi extends Backend {
       body: null,
       callback: null
     }, opts);
+
     var reqOpts = {
       method: opts.method,
       headers: {
-        //credentials: "same-origin"
+        credentials: "same-origin"
       }
     };
+
     if (this._sessionToken) {
-      //reqOpts.headers['Authorization'] = 'Bearer ' + this._sessionToken
+      reqOpts.headers['Authorization'] = 'Bearer ' + this._sessionToken
     }
-    if (/POST|PUT/i.test(opts.method)) {
+    if (/POST|PUT/i.test(opts.method) && opts.type !== 'form_data') {
        reqOpts.headers['Accept'] = 'application/json'
-       reqOpts.headers['Content-Type'] = 'application/json'
+       reqOpts.headers['Content-Type'] = opts['Content-Type']? opts['Content-Type']:'application/json'
     }
+
 
     if (opts.body) {
       reqOpts.body = JSON.stringify(opts.body);
     }
     let url = this.API_BASE_URL + opts.url;
 
-    console.log(url,reqOpts);
-    return fetch(url, {...reqOpts})
-          .then(checkStatus)
-          .then(parseJSON)
-          .catch(err=>console.log(err));
+
+    function timeout(ms, promise) {
+      return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+          reject(new Error("timeout"))
+        }, ms)
+        promise.then(resolve, reject)
+      })
+    }
+    return timeout(3000, fetch(url, {...reqOpts}))
+      .then(checkStatus)
+      .then(parseJSON)
+      .catch(err =>{
+        console.log(err);
+        return err
+      });
+
+    //return fetch(url, {...reqOpts})
+    //      .then(checkStatus)
+    //      .then(parseJSON)
+    //      .catch(err=>console.log(err));
   }
+
+
+  async _upload (opts) {
+    const checkStatus = (response) => {
+      if (response.status >= 200 && response.status < 300) {
+        return response;
+      }
+      const error = new Error(response.statusText);
+      error.response = response;
+      throw error;
+    };
+    const parseJSON = (response) => {
+      return response.json();
+    };
+    let url = this.API_BASE_URL + opts.url;
+    opts = _.extend({
+                      method: 'Post',
+                      body: opts.data || opts.body,
+                    });
+
+    return fetch(url, {...opts})
+      .then(checkStatus)
+      .then(parseJSON)
+      .catch(err=>console.log(err));
+  }
+
+
+  _ws(){
+    return this.API_BASE_WS;
+  }
+
+
 }
 // The singleton variable
 export let hapi = new Hapi();

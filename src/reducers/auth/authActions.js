@@ -132,10 +132,11 @@ export function logout () {
         return BackendFactory(token).logout()
       })
       .then(() => {
-        dispatch(loginState())
-        dispatch(logoutSuccess())
+        Actions.Login()
         dispatch(deleteSessionToken())
-        Actions.InitialLoginForm()
+        dispatch(logoutSuccess())
+        dispatch(loginState())
+
       })
       .catch((error) => {
         dispatch(loginState())
@@ -164,7 +165,7 @@ export function signupRequest () {
 export function signupSuccess (json) {
   return {
     type: SIGNUP_SUCCESS,
-    payload: json
+    payload:json
   }
 }
 export function signupFailure (error) {
@@ -181,7 +182,7 @@ export function sessionTokenRequest () {
     type: SESSION_TOKEN_REQUEST
   }
 }
-export function sessionTokenRequestSuccess (token) {
+export function sessionTokenRequestSuccess(token) {
   return {
     type: SESSION_TOKEN_SUCCESS,
     payload: token
@@ -229,51 +230,53 @@ export function deleteSessionToken () {
  * Otherwise, the user will default to the login in screen.
  */
 
-//export function getSessionToken () {
-//  console.log(appAuthToken);
-//  return dispatch => {
-//    dispatch(sessionTokenRequest())
-//    return appAuthToken.getSessionToken('TAQCET_USER')
-//      .then((token) => {
-//        console.log(token);
-//        if (token) {
-//          dispatch(sessionTokenRequestSuccess(token))
-//          dispatch(logoutState());
-//          Actions.Tabbar()
-//        } else {
-//          dispatch(sessionTokenRequestFailure());
-//          Actions.InitialLoginForm()
-//        }
-//      })
-//      .catch((error) => {
-//        dispatch(sessionTokenRequestFailure(error));
-//        dispatch(loginState());
-//        Actions.InitialLoginForm()
-//      })
-//  }
-//}
-
-export function getSessionToken () {
+export function getSessionToken(){
   return dispatch => {
     dispatch(sessionTokenRequest())
     return appAuthToken.getSessionToken()
       .then((token) => {
+        console.log('The token', token);
+
         if (token) {
-          dispatch(sessionTokenRequestSuccess(token))
-        } else {
-          return appAuthToken.getSessionToken('TAQCET_USER')
-          .then((t)=>{
-            dispatch(sessionTokenRequestSuccess(token))
+          return BackendFactory()._fetch({url:`/users/verify/${token.sessionToken}`})
+          .then(res=>{
+
+            if(res && res.valid){
+              dispatch(loginSuccess(res.user));
+              dispatch(sessionTokenRequestSuccess(res.jwt));
+              if(res.user.user_validated == 1){
+                console.log('we reach here');
+                dispatch(logoutState());
+                return Actions.Tabbar();
+              }
+              else
+                return Actions.ValidatePerson();
+            }
+            else if(res instanceof Error && res.response && res.response.status == 500){
+                dispatch(sessionTokenRequestFailure('Unable to connect to server'));
+                dispatch(loginState());
+                return Actions.Login();
+            }
+            else{
+              return dispatch(sessionTokenRequestFailure('Unable to connect to server'));
+            }
           })
+        } else {
+          console.log('NO Response')
+          dispatch(sessionTokenRequestFailure());
+          dispatch(loginState());
+          return Actions.Login()
         }
       })
       .catch((error) => {
+        console.log('Errrorrrr', error)
         dispatch(sessionTokenRequestFailure(error));
         dispatch(loginState());
-        Actions.InitialLoginForm()
+        return Actions.Login()
       })
   }
 }
+
 
 
 
@@ -297,38 +300,43 @@ export function saveSessionToken (json) {
  *
  * Otherwise, dispatch the error so the user can see
  */
-export function signup (username, email, password) {
+
+export function signup ( nationalid, email, mobile, password, country, device, location) {
   return dispatch => {
     dispatch(signupRequest())
-    return BackendFactory().signup({
-      username: username,
-      email: email,
-      password: password
-    })
-      .then((json) => {
-        return saveSessionToken(
-          Object.assign({}, json,
-            { username: username,
-              email: email
-            })
-          )
-          .then(() => {
-            dispatch(signupSuccess(
-              Object.assign({}, json,
-               { username: username,
-                 email: email
-               })
-            ))
-            dispatch(logoutState())
-            // navigate to Tabbar
-            Actions.Tabbar()
-          })
-      })
-      .catch((error) => {
-        dispatch(signupFailure(error))
-      })
+     return BackendFactory()
+       .signup({
+                 country: country,
+                 nationalid:nationalid,
+                 email: email,
+                 password: password,
+                 mobile:mobile,
+                 device:device
+       })
+       .then((json) => {
+         //const sessionObject = Object.assign({}, json, {email: email});
+         return saveSessionToken(json.jwt)
+           .then(() => {
+             dispatch(signupSuccess(json.user));
+             dispatch(sessionTokenRequestSuccess(json.jwt));
+             Actions.ValidatePerson();
+
+             dispatch(logoutState());
+           })
+       })
+       .catch((error) => {
+         dispatch(signupFailure(error))
+       })
+
   }
 }
+
+
+
+
+
+
+
 
 /**
  * ## Login actions
@@ -364,24 +372,30 @@ export function loginFailure (error) {
  * otherwise, dispatch a failure
  */
 
-export function login (username, password) {
-  return dispatch => {
-    dispatch(loginRequest())
-    return BackendFactory().login({
-      username: username,
-      password: password
-    })
 
-      .then(function (json) {
-        return saveSessionToken(json)
+
+
+export function login (email, password) {
+  return dispatch => {
+    dispatch(loginRequest());
+    return BackendFactory().login({
+      email: email,
+      password: password
+    }).then(function (json) {
+        return saveSessionToken(json.jwt)
           .then(function () {
-            dispatch(loginSuccess(json))
-            // navigate to Tabbar
-            Actions.Tabbar()
+            dispatch(loginSuccess(json.user));
+            dispatch(sessionTokenRequestSuccess(json.jwt));
+            if(json.user.user_validated == 1)
+              Actions.Tabbar();
+            else
+              Actions.ValidatePerson();
+
             dispatch(logoutState())
           })
       })
       .catch((error) => {
+        console.log(error);
         dispatch(loginFailure(error))
       })
   }
@@ -436,3 +450,12 @@ export function resetPassword (email) {
       })
   }
 }
+
+
+
+
+/*
+*
+*
+*
+* */

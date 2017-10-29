@@ -11,7 +11,7 @@
  */
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
+import BackendFactory from '../lib/BackendFactory'
 /**
  * The actions we need
  */
@@ -32,12 +32,7 @@ import Header from '../components/Header'
  * The components needed from React
  */
 import React, {Component} from 'react'
-import
-{
-  StyleSheet,
-  View
-}
-from 'react-native'
+import {StyleSheet,View,Text} from 'react-native'
 
 /**
  * The platform neutral button
@@ -57,6 +52,8 @@ function mapStateToProps (state) {
       }
     },
     global: {
+      currentUser: state.global.currentUser,
+      userVerified: state.global.userVerified,
       currentState: state.global.currentState,
       showState: state.global.showState
     }
@@ -78,9 +75,9 @@ var styles = StyleSheet.create({
     flex: 1
   },
   summary: {
-    fontFamily: 'BodoniSvtyTwoITCTT-Book',
-    fontSize: 18,
-    fontWeight: 'bold'
+    fontFamily: 'SharpSansNo1-BoldItalic',
+    fontSize: 16,
+    textAlign:"center",
   },
   button: {
     backgroundColor: '#FF3366',
@@ -100,29 +97,15 @@ I18n.translations = Translations
  * ## App class
  */
 class Main extends Component {
-
-  handlePress () {
-    Actions.Subview({
-      title: 'Subview'
-      // you can add additional props to be passed to Subview here...
-    })
+  constructor(props){
+    super(props);
+    console.log(props);
   }
 
   render () {
+    const {currentUser, userVerified} = this.props.global;
     return (
-      <View style={styles.container}>
-        <View>
-          <Header isFetching={this.props.auth.form.isFetching}
-            showState={this.props.global.showState}
-            currentState={this.props.global.currentState}
-            onGetState={this.props.actions.getState}
-            onSetState={this.props.actions.setState} />
-
-          <Button style={styles.button} onPress={this.handlePress.bind(this)}>
-            {I18n.t('Main.navigate')}
-          </Button>
-        </View>
-      </View>
+      <View style={styles.container}></View>
     )
   }
 }

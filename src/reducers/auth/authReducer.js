@@ -17,6 +17,12 @@ const formValidation = require('./authFormValidation').default
 /**
  * ## Auth actions
  */
+
+
+
+
+
+
 const {
   SESSION_TOKEN_REQUEST,
   SESSION_TOKEN_SUCCESS,
@@ -102,7 +108,7 @@ export default function authReducer (state = initialState, action) {
     case FORGOT_PASSWORD:
       return formValidation(
       state.setIn(['form', 'state'], action.type)
-        .setIn(['form', 'error'], null)
+        .setIn(['form', 'error'],null)
     )
 
     /**
@@ -127,12 +133,16 @@ export default function authReducer (state = initialState, action) {
      * Set the fetching flag so the forms will be enabled
      */
     case SESSION_TOKEN_SUCCESS:
-    case SESSION_TOKEN_FAILURE:
     case SIGNUP_SUCCESS:
     case LOGIN_SUCCESS:
     case LOGOUT_SUCCESS:
     case RESET_PASSWORD_SUCCESS:
       return state.setIn(['form', 'isFetching'], false)
+                  .setIn(['form', 'error'], null);
+
+    case SESSION_TOKEN_FAILURE:
+      return state.setIn(['form', 'isFetching'], false)
+        .setIn(['form', 'error'], action.payload)
 
     /**
      *
@@ -152,24 +162,31 @@ export default function authReducer (state = initialState, action) {
      * Set all the field values from the payload
      */
     case SET_STATE:
-      var form = JSON.parse(action.payload).auth.form
+      try{
+        var form = JSON.parse(action.payload).auth.form
 
-      var next = state.setIn(['form', 'state'], form.state)
-          .setIn(['form', 'disabled'], form.disabled)
-          .setIn(['form', 'error'], form.error)
-          .setIn(['form', 'isValid'], form.isValid)
-          .setIn(['form', 'isFetching'], form.isFetching)
-          .setIn(['form', 'fields', 'username'], form.fields.username)
-          .setIn(['form', 'fields', 'usernameHasError'], form.fields.usernameHasError)
-          .setIn(['form', 'fields', 'email'], form.fields.email)
-          .setIn(['form', 'fields', 'emailHasError'], form.fields.emailHasError)
-          .setIn(['form', 'fields', 'password'], form.fields.password)
-          .setIn(['form', 'fields', 'passwordHasError'], form.fields.passwordHasError)
-          .setIn(['form', 'fields', 'passwordAgain'], form.fields.passwordAgain)
-          .setIn(['form', 'fields', 'passwordAgainHasError'], form.fields.passwordAgainHasError)
-
-      return next
-
+        var next = state.setIn(['form', 'state'], form.state)
+            .setIn(['form', 'disabled'], form.disabled)
+            .setIn(['form', 'error'], form.error)
+            .setIn(['form', 'isValid'], form.isValid)
+            .setIn(['form', 'isFetching'], form.isFetching)
+            .setIn(['form', 'fields', 'username'], form.fields.username)
+            .setIn(['form', 'fields', 'usernameHasError'], form.fields.usernameHasError)
+            .setIn(['form', 'fields', 'email'], form.fields.email)
+            .setIn(['form', 'fields', 'emailHasError'], form.fields.emailHasError)
+            .setIn(['form', 'fields', 'password'], form.fields.password)
+            .setIn(['form', 'fields', 'passwordHasError'], form.fields.passwordHasError)
+            .setIn(['form', 'fields', 'passwordAgain'], form.fields.passwordAgain)
+            .setIn(['form', 'fields', 'passwordAgainHasError'], form.fields.passwordAgainHasError)
+            .setIn(['form', 'fields', 'mobile'], form.fields.mobile)
+            .setIn(['form', 'fields', 'mobileHasError'], form.fields.mobileHasError)
+            .setIn(['form', 'fields', 'nationalid'], form.fields.nationalid)
+            .setIn(['form', 'fields', 'nationalidHasError'], form.fields.nationalidHasError)
+        return next
+      }
+      catch (err){
+        console.log(err)
+      }
     case DELETE_TOKEN_REQUEST:
     case DELETE_TOKEN_SUCCESS:
         /**

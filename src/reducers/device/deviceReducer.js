@@ -34,7 +34,7 @@ export default function deviceReducer (state = initialState, action) {
     case SET_DEVICE_INFO:
           return state.set('device_brand',action.device_brand)
                       .set('device_unique_id',action.device_unique_id)
-                      .set('device_id',action.device_id)
+                      .set('device_model_id',action.device_id)
                       .set('device_country',action.device_country)
                       .set('device_locale',action.device_locale)
                       .set('device_emulator',action.device_emulator)

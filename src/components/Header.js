@@ -26,20 +26,23 @@
 import React, {PropTypes} from 'react'
 import
 {
+  Button,
   ActivityIndicator,
   Image,
   StyleSheet,
   Text,
   TextInput,
   TouchableHighlight,
-  View
-} from 'react-native'
+  View,
+} from 'react-native';
+import {Actions} from 'react-native-router-flux'
 import colors from '../config/Colors';
 
 /**
  * Project component that will respond to onPress
  */
 const FormButton = require('./FormButton')
+
 /**
  * ## Styles
  */
@@ -56,8 +59,8 @@ var styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   mark: {
-    height: 94,
-    width: 300
+    height: 200,
+    width: 200
   },
   text: {
     textAlign: 'center',
@@ -74,119 +77,15 @@ import Translations from '../lib/Translations';
 I18n.translations = Translations;
 
 var Header = React.createClass({
-  /**
-   * ## Header.class
-   * set the initial state of having the button be disabled.
-   */
-  getInitialState () {
-    return {
-      text: '',
-      isDisabled: true
-    }
-  },
-  /**
-   * ### propTypes
-   * * isFetching: display the spinner if true
-   * * showState: should the JSON state, currentState, be displayed
-   * * currentState: the JSON state
-   * * onGetState: the action to call to get the current state
-   * * onSetState: the action to call to set the state
-   */
-  propTypes: {
-    isFetching: PropTypes.bool,
-    showState: PropTypes.bool,
-    currentState: PropTypes.object,
-    onGetState: PropTypes.func,
-    onSetState: PropTypes.func
-  },
-  /**
-   * ### _onPressMark
-   * Call the onGetState action passing the state prop
-   */
-  _onPressMark () {
-    this.props.onGetState(!this.props.showState)
-  },
-  /**
-   * ### _onChangeText
-   * when the textinput value changes, set the state for that component
-   */
-  _onChangeText (text) {
-    this.setState({
-      text,
-      isDisabled: false
-    })
-  },
-  /**
-   * ### _updateStateButtonPress
-   * When the button for the state is pressed, call ```onSetState```
-   */
-  _updateStateButtonPress () {
-    this.props.onSetState(this.state.text)
-  },
-
-  /**
-   * ### render
-   *
-   * if showState, stringify the currentState and display it to the
-   * browser for copying. Then display to the user.
-   *
-   * When the value of the input changes, call ```_onChangeText```
-   *
-   * When the 'Update State' button is pressed, we're off to the
-   * races with Hot Loading...just call the
-   * ```_updateStateButtonPress``` and away we go...
-   *
-   */
   render () {
-    let displayText;
-    if (this.props.showState) {
-      displayText = JSON.stringify(this.props.currentState)
-    }
-
     return (
       <View>
         <View style={styles.header}>
-
-          <TouchableHighlight onPress={this._onPressMark}>
+          <TouchableHighlight>
             <Image style={styles.mark}
-              source={require('../images/taqcet_white.png')}
-            />
+              source={require('../images/logo.png')}/>
           </TouchableHighlight>
-          <View style={{paddingTop:40}}>
-            {this.props.isProcessing ?
-              <ActivityIndicator
-                color={colors.white}
-                animating size='large' />
-             :
-              <View>
-                <Text style={[styles.text,
-                {fontSize:32, color: colors.brightBlue}]}>
-                  Thank You!
-                </Text>
-                <Text style={styles.text}> We have got some data to train our models </Text>
-                <Text style={styles.text}> Now you can close the app</Text>
-              </View>}
-          </View>
-
         </View>
-        {this.props.showState
-         ? <View style={styles.container}>
-           <Text>{I18n.t('Header.current_state')} ({I18n.t('Header.see_console')})</Text>
-           <TextInput style={{height: 100, borderColor: 'gray', borderWidth: 1}}
-             value={displayText}
-             editable
-             multiline
-             onChangeText={(text) => this._onChangeText(text)}
-             numberOfLines={20} />
-           <View style={{
-             marginTop: 10
-           }}>
-             <FormButton isDisabled={this.state.isDisabled}
-               onPress={this._updateStateButtonPress}
-               buttonText={I18n.t('Header.update_state')} />
-           </View>
-         </View>
-         : null}
       </View>
     )
   }

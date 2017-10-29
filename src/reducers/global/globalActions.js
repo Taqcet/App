@@ -15,7 +15,8 @@ const {
   SET_STORE,
   SET_STATE,
   GET_STATE,
-  SET_PROCESSING_INFO
+  SET_PROCESSING_INFO,
+  SET_USER_VERIFICATION
 } = require('../../lib/constants').default
 
 /**
@@ -42,6 +43,15 @@ export function setStore (store) {
     payload: store
   }
 }
+
+export function setUserVerification (value) {
+  return {
+    type: SET_USER_VERIFICATION,
+    payload: value
+  }
+}
+
+
 /**
  * ## set state
  *

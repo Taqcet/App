@@ -64,6 +64,17 @@
       <string>Octicons.ttf</string>
       <string>SimpleLineIcons.ttf</string>
       <string>Zocial.ttf</string>
+      <string>Sharp Sans No1 Bold Italic.ttf</string>
+      <string>Sharp Sans No1 Medium Italic.ttf</string>
+      <string>SharpSansNo1-BoldItalic.ttf</string>
+      <string>SharpSansNo1-MediumItalic.ttf</string>
+      <string>SharpSansNo1-Medium.ttf</string>
     </array>
+    <key>NSCameraUsageDescription</key>
+    <string>Access your camera</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Access your camera roll</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Access your microphone</string>
   </dict>
 </plist>

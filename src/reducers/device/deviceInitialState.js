@@ -25,7 +25,7 @@ var InitialState = Record({
   version: null,
   device_brand: null,
   device_unique_id: null,
-  device_id: null,
+  device_model_id: null,
   device_country: null,
   device_locale: null,
   device_emulator: null,

@@ -4,6 +4,9 @@ export default keyMirror({
   SET_PLATFORM: null,
   SET_VERSION: null,
 
+  SET_USER: null,
+  SET_USER_VERIFICATION: null,
+
   SESSION_TOKEN_REQUEST: null,
   SESSION_TOKEN_SUCCESS: null,
   SESSION_TOKEN_FAILURE: null,

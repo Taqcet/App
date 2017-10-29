@@ -13,7 +13,9 @@ const BackendFactory = require('../../lib/BackendFactory').default;
  *
  * The actions supported
  */
-var {SET_LAST_MESSAGE_INDEX, SET_MESSAGES, } = require('./constants').default;
+var {SET_LAST_MESSAGE_INDEX,
+  SEND_MESSAGES_FAILURE,SEND_MESSAGES_SUCCESS,
+  SET_MESSAGES, } = require('./constants').default;
 
 
 /**
@@ -34,8 +36,18 @@ export function setMessages (messages) {
     messages
   }
 }
-export function sendMessagesSuccess (messages) {}
-export function sendMessagesFaliure (messages) {}
+export function sendMessagesSuccess (messages) {
+  return {
+    type: SEND_MESSAGES_SUCCESS,
+
+  }
+}
+export function sendMessagesFailure (error) {
+  return {
+    type: SEND_MESSAGES_FAILURE,
+    error,
+  }
+}
 export function sendMessages (messages, device) {
   messages = messages.map(m => {
     m.date = new Date(m.date);
@@ -45,14 +57,12 @@ export function sendMessages (messages, device) {
   return dispatch => {
     dispatch(setMessages(messages));
     return BackendFactory()
-      ._fetch({method:'POST', url:'messages',body:{message:messages}})
+      ._fetch({method:'POST', url:'/messages',body:{message:messages}})
       .then((json) => {
-         console.log('post successful', json);
         return dispatch(sendMessagesSuccess())
       })
       .catch((error) => {
-        console.log('ERROR ====>', error)
-        return dispatch(sendMessagesFaliure(error))
+        return dispatch(sendMessagesFailure(error))
       })
   }
 }

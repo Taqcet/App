@@ -4,6 +4,8 @@ import android.app.Application;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.SvgPackage;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.devfd.RNGeocoder.RNGeocoderPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
@@ -27,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.Arrays;
 import java.util.List;
 
-import com.rhaker.reactnativesmsandroid.RNSmsAndroidPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -41,10 +42,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new SvgPackage(),
+            new RCTCameraPackage(),
             new RNGeocoderPackage(),
             new LinearGradientPackage(),
             new RNDeviceInfo(),
-          new RNSmsAndroidPackage(),
           new RNSimpleAlertDialogPackage(),
           new VectorIconsPackage()
       );

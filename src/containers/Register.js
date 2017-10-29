@@ -20,7 +20,7 @@ import * as authActions from '../reducers/auth/authActions'
 /**
  *   LoginRender
  */
-import LoginRender from '../components/LoginRender'
+import LoginRender from '../components/LoginRender';
 
 /**
  * The necessary React
@@ -40,7 +40,8 @@ const {
 function mapStateToProps (state) {
   return {
     auth: state.auth,
-    global: state.global
+    global: state.global,
+    device: state.device,
   }
 }
 
@@ -50,8 +51,9 @@ function mapDispatchToProps (dispatch) {
   }
 }
 
-function buttonPressHandler (signup, username, email, password) {
-  signup(username, email, password)
+function buttonPressHandler (signup, nationalid, email, mobile,password, device) {
+  let country = 'eg';
+  signup(nationalid, email, mobile, password,country, device)
 }
 
 /**
@@ -60,30 +62,31 @@ function buttonPressHandler (signup, username, email, password) {
 var I18n = require('react-native-i18n')
 import Translations from '../lib/Translations'
 I18n.translations = Translations
+import { Actions } from 'react-native-router-flux'
 
 let Register = React.createClass({
-
   render () {
     let loginButtonText = I18n.t('Register.register')
     let onButtonPress = buttonPressHandler.bind(null,
                                                 this.props.actions.signup,
-                                                this.props.auth.form.fields.username,
+                                                this.props.auth.form.fields.nationalid,
                                                 this.props.auth.form.fields.email,
-                                                this.props.auth.form.fields.password)
+                                                this.props.auth.form.fields.mobile,
+                                                this.props.auth.form.fields.password,
+                                                this.props.device)
+    let onSwitch = Actions.Login;
 
-    return (
-      <LoginRender
-        formType={REGISTER}
-        loginButtonText={loginButtonText}
-        onButtonPress={onButtonPress}
-        displayPasswordCheckbox
-        leftMessageType={FORGOT_PASSWORD}
-        rightMessageType={LOGIN}
-        auth={this.props.auth}
-        global={this.props.global}
-      />
+    return <LoginRender
+              formType={REGISTER}
+              loginButtonText={loginButtonText}
+              onButtonPress={onButtonPress}
+              onSwitch={onSwitch}
+              displayPasswordCheckbox
 
-    )
+              leftMessageType={LOGIN}
+              auth={this.props.auth}
+              global={this.props.global}
+            />
   }
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Register)

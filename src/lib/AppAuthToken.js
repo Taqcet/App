@@ -49,7 +49,7 @@ export class AppAuthToken {
         return store.get(this.SESSION_TOKEN_KEY)
       })
     }
-    return store.get(this.SESSION_TOKEN_KEY)
+    else return store.get(this.SESSION_TOKEN_KEY)
   }
   /**
    * ### deleteSessionToken

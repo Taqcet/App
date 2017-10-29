@@ -61,22 +61,30 @@ function buttonPressHandler (login, username, password) {
 var I18n = require('react-native-i18n')
 import Translations from '../lib/Translations'
 I18n.translations = Translations
+import { Actions } from 'react-native-router-flux'
+
 
 let Login = React.createClass({
 
   render () {
+
     let loginButtonText = I18n.t('Login.login')
     let onButtonPress = buttonPressHandler.bind(null,
                                                 this.props.actions.login,
-                                                this.props.auth.form.fields.username,
+                                                this.props.auth.form.fields.email,
                                                 this.props.auth.form.fields.password
-                                               )
+                                               );
+
+    let onSwitch = Actions.Register;
 
     return (
       <LoginRender
         formType={LOGIN}
+
         loginButtonText={loginButtonText}
         onButtonPress={onButtonPress}
+        onSwitch={onSwitch}
+
         displayPasswordCheckbox
         leftMessageType={REGISTER}
         rightMessageType={FORGOT_PASSWORD}

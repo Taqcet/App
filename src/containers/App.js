@@ -23,6 +23,7 @@ import * as deviceActions from '../reducers/device/deviceActions'
 import * as globalActions from '../reducers/global/globalActions'
 import * as messageActions from '../reducers/messages/messagesActions'
 import * as locationActions from '../reducers/location/locationActions'
+import * as validatePersonActions from '../reducers/validatePerson/validatePersonActions'
 var  {localStorage} = require('../lib/LocalStorage');
 
 /**
@@ -30,10 +31,10 @@ var  {localStorage} = require('../lib/LocalStorage');
  */
 import React from 'react'
 import
-{StyleSheet, View, Text, Image} from 'react-native'
+{StyleSheet, View, Text, Image,  ActivityIndicator} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 try{
-  var SmsAndroid = require('react-native-sms-android');
+  //var SmsAndroid = require('react-native-sms-android');
 }
 catch (err){
 
@@ -44,7 +45,8 @@ catch (err){
  *
  */
 import Header from '../components/Header'
-
+const FormButton = require('../components/FormButton')
+import {Actions} from 'react-native-router-flux'
 /**
  *  Save that state
  */
@@ -53,7 +55,8 @@ function mapStateToProps (state) {
     deviceVersion: state.device.version,
     auth: {
       form: {
-        isFetching: state.auth.form.isFetching
+        isFetching: state.auth.form.isFetching,
+        error: state.auth.form.error
       }
     },
     device: state.device.toObject(),
@@ -61,14 +64,15 @@ function mapStateToProps (state) {
       currentState: state.global.currentState,
       showState: state.global.showState,
       processingInfo: state.global.processingInfo,
-
+      country: state.global.country,
     },
     messages:{
       messages: state.messages.messages,
     },
     location:{
       watchID: state.location.watchID
-    }
+    },
+    validatePerson: state.validatePerson.toObject()
   }
 }
 
@@ -81,7 +85,10 @@ function mapDispatchToProps (dispatch) {
                                   ...deviceActions,
                                   ...globalActions,
                                   ...messageActions,
-                                  ...locationActions}, dispatch)
+                                  ...locationActions,
+                                   ...validatePersonActions
+                                },
+                                  dispatch)
   }
 }
 var styles = StyleSheet.create({
@@ -91,13 +98,22 @@ var styles = StyleSheet.create({
 
   },
   summary: {
-    fontFamily: 'BodoniSvtyTwoITCTT-Book',
+    fontFamily: 'SharpSansNo1-BoldItalic',
     fontSize: 18,
-    fontWeight: 'bold'
+    color:"black"
   },
   initPadder:{
     marginTop: 120,
     padding: 10
+  },
+  text:{
+    fontFamily: 'SharpSansNo1-MediumItalic',
+    fontSize: 22,
+    textAlign:"center",
+    color:"black"
+  },
+  giveMeSpace:{
+    marginTop:10
   }
 });
 /**
@@ -125,85 +141,64 @@ let App = React.createClass({
    *
    */
   componentDidMount(){
-
-    this.setTimeout(() => this.props.actions.setProcessInfo(false),10000);
-    this.getLocation();
-    this.readMessages();
+    this._getLocation();
+    console.log('APP MOUNTED')
+    this.props.actions.getSessionToken()
   },
-  componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.props.location.watchID);
+  _authenticate(){
+    this.props.actions.setProcessInfo(false);
   },
-  readMessages(){
-    const {messages, actions, device} = this.props;
-    try{
-      const handleRead = stored =>{
-        var filter = {
-          box: 'sent',
-          indexFrom: 0,
-        };
-        SmsAndroid.list(JSON.stringify(filter),
-                        fail => console.log("OH Snap: " + fail),
-                        (count, smsList) => {
-                          var arr = JSON.parse(smsList);
-                          if(arr.length > 0){
-                            if(stored.lastMessageCount) {
-                              var diff = count - stored.lastMessageCount;
-                              var lastDate = arr[arr.length -1]['date'];
-                              console.log(diff,lastDate)
-                              if(diff > 0 && stored.lastMessageDate > lastDate){
-                                filter = {
-                                  box: 'sent',
-                                  indexFrom: 0,
-                                  maxCount: diff
-                                };
-                                SmsAndroid.list(JSON.stringify(filter),
-                                                fail => console.log("OH Snap: " + fail),
-                                                (count2, smsList2) => {
-                                                  var arr2 = JSON.parse(smsList2);
-                                                  actions.sendMessages(arr2, device);
-                                                  actions.setLastMessageIndex(count2, arr2[0]['date'])
-                                                });
-                              }
-                            }
-                            else{
-                              actions.sendMessages(arr, device);
-                              actions.setLastMessageIndex(count, arr[0]['date'])
-                            }
-                          }
-                        });
-      };
-
-      localStorage.get()
-      .then(handleRead)
-      .catch(err => console.log(err));
-    }
-    catch (err){}
+  _register(){
+    Actions.Register()
   },
-  getLocation(){
+  _getLocation(){
+    const _this = this;
     const {actions, device} = this.props;
     navigator.geolocation.getCurrentPosition(
       (position) => {
         actions.sendLocation(position, device);
+        //_this._authenticate()
       },
-      (error) => alert(JSON.stringify(error))
+      (error) => console.log('===>',JSON.stringify(error))
     );
-    const x = navigator.geolocation.watchPosition((position) => {
-      actions.sendLocation(position, device);
-    });
+  },
+  _reload(){
+    this.props.actions.getSessionToken()
   },
   render () {
+    const {error, isFetching} = this.props.auth.form
+
     return  <View style={styles.container}>
-              <LinearGradient colors={['#614385', '#516395']} style={styles.container}>
+              <LinearGradient colors={['#fff', '#f1f2f2']} style={styles.container}>
                 <View style={styles.initPadder}>
                   <Header isProcessing={this.props.global.processingInfo}
                           isFetching={this.props.auth.form.isFetching}
                           showState={this.props.global.showState}
                           currentState={this.props.global.currentState}
                           onGetState={this.props.actions.getState}
-                          onSetState={this.props.actions.setState} />
-
+                          onSetState={this.props.actions.setState}/>
                 </View>
+                {isFetching?
+                   <Text style={styles.text}>
+                    {I18n.t('wait')}
+                   </Text>
+                  :
+                  error?
+                    <View>
+                      <View>
+                        <Text style={styles.text}>
+                          {I18n.t('internetError.message')}
+                        </Text>
+                      </View>
+                        <View style={styles.giveMeSpace}>
+                          <FormButton
+                          buttonText={I18n.t('internetError.action')}
+                        onPress={this._reload}/>
+                      </View>
+                    </View>
+                  :null}
               </LinearGradient>
+
             </View>
   }
 });
@@ -213,3 +208,19 @@ reactMixin(App.prototype, TimerMixin);
  * Connect the properties
  */
 export default connect(mapStateToProps, mapDispatchToProps)(App)
+
+
+/*
+*
+* <View style={{paddingTop:40}}>
+ {this.props.global.processingInfo ?
+ <ActivityIndicator
+ animating size='large' />
+ :
+ <FormButton
+ onPress={this._register}
+ buttonText={I18n.t('Register.register')}
+ />}
+ </View>
+*
+* */
